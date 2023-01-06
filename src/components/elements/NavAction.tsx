@@ -1,34 +1,52 @@
-import { HStack, Icon, Text } from "@chakra-ui/react";
+import { Icon, Text, Button } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
-import * as React from "react";
+import { useContext } from "react";
+import { HeaderContext } from "../layouts/Header";
+import CartCount from "./CartCount";
 
 type NavActionProps = {
-  to?: string;
+  to: string;
   label: string;
   icon: React.ElementType;
   isActive?: boolean;
   children?: React.ReactNode;
+  count?: number;
 };
 
 const NavAction = (props: NavActionProps) => {
+  const { label, icon, to = "#", count = 0 } = props;
+  const countDisplay = count > 0 ? <CartCount>{count}</CartCount> : null;
+  const { isDesktop, onClose } = useContext(HeaderContext);
+
   const location = useLocation();
   const bgColor = location.pathname === props.to ? "primary.100" : "inherit";
-  const { label, icon, to = "#" } = props;
+
   return (
     <Link to={to}>
-      <HStack
-        spacing="2"
-        px="4"
-        py="2"
+      <Button
         bg={bgColor}
-        borderRadius={"base"}
-        _hover={{ background: "primary.100" }}
+        w="full"
+        variant={"ghost"}
+        justifyContent="left"
+        gap={"4"}
+        _hover={{ bg: "primary.100" }}
+        _active={{ bg: "primary.100" }}
+        onClick={onClose}
       >
-        <Text fontSize="md" fontWeight="semibold">
-          {label}
-        </Text>
-        <Icon as={icon} boxSize="5" />
-      </HStack>
+        {isDesktop ? (
+          <>
+            <Text>{label}</Text>
+            <Icon boxSize={"5"} as={icon} />
+            {countDisplay}
+          </>
+        ) : (
+          <>
+            <Icon boxSize={"5"} as={icon} />
+            {countDisplay}
+            <Text>{label}</Text>
+          </>
+        )}
+      </Button>
     </Link>
   );
 };

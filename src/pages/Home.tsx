@@ -14,12 +14,11 @@ import kittens from "../assets/basket-cats.png";
 const Home = () => {
   return (
     <Box>
-      <Container maxW="container.lg" py={"16"}>
+      <Container maxW="container.lg" py={"16"} px="4">
         <Flex
           direction={{ base: "column", md: "row" }}
           alignItems="center"
           justify={"center"}
-          p="4"
           gap={"8"}
         >
           <VStack spacing={"6"} flex=".5 1 0">

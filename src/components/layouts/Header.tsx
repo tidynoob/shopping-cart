@@ -5,42 +5,55 @@ import {
   HStack,
   useBreakpointValue,
   Heading,
+  useDisclosure,
 } from "@chakra-ui/react";
-import NavAction from "../elements/NavAction";
-import CartCount from "../elements/CartCount";
-import {
-  AiOutlineHome,
-  AiOutlineShopping,
-  AiOutlineInfoCircle,
-  AiOutlineShoppingCart,
-} from "react-icons/ai";
+import { createContext } from "react";
 
-const Header = () => {
+import DesktopNav from "../elements/NavDesktop";
+import NavDrawer from "../elements/NavDrawer";
+import NavAction from "../elements/NavAction";
+
+type HeaderProps = {
+  title: string;
+  children?: React.ReactNode;
+};
+
+type HeaderContextType = {
+  isDesktop: boolean | undefined;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+};
+
+export const HeaderContext = createContext({
+  isDesktop: false,
+  isOpen: false,
+  onOpen: () => {},
+  onClose: () => {},
+} as HeaderContextType);
+
+const ResponsiveHeader = ({ title, children }: HeaderProps) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { Provider } = HeaderContext;
+
   return (
-    <Box as="header">
-      <Container maxW="container.lg">
-        <Flex justify="space-between" align="center" wrap="wrap" p="4">
-          <Heading as="h1" size="md" fontFamily="test" letterSpacing={"wide"}>
-            Fur-ever Friends
-          </Heading>
-          <HStack as="nav" spacing="2">
-            <NavAction label="Home" icon={AiOutlineHome} to="/" />
-            <NavAction
-              label="Shopping"
-              icon={AiOutlineShopping}
-              to="/shopping"
-            />
-            <NavAction label="About" icon={AiOutlineInfoCircle} to="/about" />
-            <HStack spacing="0">
-              <NavAction label="Cart" icon={AiOutlineShoppingCart} />
-              <CartCount>1</CartCount>
-            </HStack>
-          </HStack>
-        </Flex>
-      </Container>
-    </Box>
+    <Provider value={{ isDesktop, isOpen, onOpen, onClose }}>
+      <Box as="header">
+        <Container maxW="container.lg">
+          <Flex justify="space-between" align="center" wrap="wrap" p="4">
+            <Heading as="h1" size="md" fontFamily="test" letterSpacing={"wide"}>
+              {title}
+            </Heading>
+            <DesktopNav>{children}</DesktopNav>
+          </Flex>
+        </Container>
+      </Box>
+      <NavDrawer placement="right">{children}</NavDrawer>
+    </Provider>
   );
 };
 
-export default Header;
+ResponsiveHeader.NavAction = NavAction;
+
+export default ResponsiveHeader;
